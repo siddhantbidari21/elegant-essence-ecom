@@ -1,8 +1,13 @@
-import { Search, User, ShoppingBag, Heart, Menu } from "lucide-react";
+import { Search, User, ShoppingBag, Heart, Menu, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
+  const { user, isAdmin, signOut } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4">
@@ -46,9 +51,35 @@ export const Header = () => {
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={signOut} className="flex items-center gap-2">
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/auth">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
             <Button variant="ghost" size="icon" className="relative">
               <Heart className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-sale-red text-xs text-white flex items-center justify-center">
